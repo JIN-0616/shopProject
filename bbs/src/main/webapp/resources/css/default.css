@@ -1,0 +1,36 @@
+body{
+  background-color: #212529;
+}
+table {
+  border-collapse: collapse;
+  overflow: hidden;
+}
+
+tr:hover {
+  background-color: darkblue;
+}
+
+tr {
+  width: 90%;
+}
+
+td, tr
+th {
+  position: relative;			
+}
+
+th {
+  border: 1.5px solid darkblue;
+}
+
+td:hover::after,
+th:hover::after {
+  content: "";
+  position: absolute;
+  background-color: darkblue;
+  left: 0;
+  top: -5000px;
+  height: 10000px;
+  width: 100%;
+  z-index: -1;
+}

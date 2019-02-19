@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+		
+	<!-- 어드바이스(advice)  "무엇"   -->
+	<bean name="logAop" class="com.t.hc.aop.LogExecute" />
+	
+	<!-- pointcut  "어디" -->
+	<aop:config>
+	
+		 <!-- pointcut aop실행할 페키지.메소드의 위치를 지정해 준다 -->
+		<aop:pointcut expression="execution(public * com.t.hc.model.*Dao*.*(..))" id="serviceLogPoint" />
+
+		<!-- aspect pointcut의 위치에서 어느순간 실행이 될것인지를 지정해줌  aspectjweaver.jar 없으면안된-->
+		<aop:aspect id="logAop" ref="logAop">
+		
+			<!-- before는 pointcut의 메소드가 실행되기 전에 발동 -->
+			<aop:before method="before" pointcut-ref="serviceLogPoint" />
+			
+			<!-- after-returning은 메소드가 실행 된 후에 성공을 작동 -->
+			<aop:after-returning method="afterReturning" pointcut-ref="serviceLogPoint" />
+			<!-- after-throwing은 메소드가 실패했을경우 즉, 예외가 발생되었을 경우 작동 -->
+			<aop:after-throwing method="daoError" pointcut-ref="serviceLogPoint" />
+		</aop:aspect>
+	</aop:config>
+
+	<tx:annotation-driven transaction-manager="transactionManager" />
+	
+</beans>

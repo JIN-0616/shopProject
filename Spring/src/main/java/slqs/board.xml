@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.t.hc.board">
+	
+	<!-- 2. ROWNUM Query -->
+	<select id="selectPaging" parameterType="pagingVo" resultType="listDto">
+		SELECT *
+		FROM (	SELECT ROWNUM RNUM, P.*
+				FROM (	SELECT *
+						FROM BOARD
+						ORDER BY REGDATE DESC ) P )
+		WHERE RNUM BETWEEN #{start} AND #{last}
+	</select>
+	<!-- 2. Total Query -->
+	<select id="selectTotalPaging" resultType="java.lang.Integer">
+		SELECT COUNT(*)
+		FROM BOARD
+	</select>
+
+
+	<insert id="listInsert" parameterType="listDto">
+		INSERT INTO BOARD
+		(TITLE)
+		VALUES (#{title})
+	</insert>
+	<delete id="deleteAll">
+		DELETE FROM BOARD
+	</delete>
+	
+</mapper>

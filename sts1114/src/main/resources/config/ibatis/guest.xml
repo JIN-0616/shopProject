@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE sqlMap      
+    PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN"      
+    "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+
+ <sqlMap namespace="guest" >
+ 	<typeAlias alias="dt" type="net.hb.order.GuestDTO"/>
+ 	
+ 	<!-- parameterClass="net.hb.order.GuestDTO" or "dt" 생략됨-->
+ 	<insert id="add" > 	
+ 	  insert into guest values(#sabun#,#name#,#title#,sysdate,#pay#)
+ 	</insert>
+ 	
+ 	<!-- 최초쿼리+페이징+검색 -->					  
+ 	<select id="selectAll" parameterClass="dt" resultClass="dt">
+ 	  select * from (
+ 	    select rownum rn, g.* from 
+ 	    (select * from guest where $skey$ like '%' || #sval# ||'%') g 
+ 	  ) where rn between #start# and #end# 
+ 	</select>
+ 	
+ 	<!-- 최초쿼리+페이징 --> <!-- 넘어오는 인자값 GuestDTO 내보낼 인자값 GuestDTO(여러개)-->
+ 	<select id="selectAll789" parameterClass="dt" resultClass="net.hb.order.GuestDTO">
+ 	   select * from (
+ 	    select rownum rn,sabun,name,title,nalja,pay from guest
+ 	   ) where rn between #start# and #end#  
+    </select>
+    <!-- 최초 쿼리 -->
+ 	<select id="selectAll777" resultClass="dt">
+ 	  select * from (select rownum rn, g.* from guest g order by rn)  
+ 	</select>
+ 	 	
+ 	
+ 	<select id="countAll" parameterClass="dt" resultClass="int">
+ 	   select  count(*)  from guest where $skey$ like '%' || #sval# ||'%'
+ 	</select> 		
+     
+    <select id="countAll789" resultClass="int">
+ 	   select  count(*)  from guest
+ 	</select> 		
+     
+    <select id="detail" resultClass="dt">
+      select * from guest where sabun=#sabun#
+    </select>					<!-- #data# or #sabun# 둘 다 가능 -->
+         
+ 	<delete id="del">
+ 	   delete  from  guest where sabun=#sabun#
+ 	</delete>
+ 	
+ 	<update id="edit">
+ 	   update guest set name=#name#, title=#title#, nalja=sysdate, pay=#pay# where sabun=#sabun#  	
+ 	</update>
+  	
+ </sqlMap>   

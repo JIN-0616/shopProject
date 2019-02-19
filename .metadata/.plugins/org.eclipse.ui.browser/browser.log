@@ -1,0 +1,9 @@
+
+1월 29, 2019 03:03:07.46 NEW SESSION
+1월 29, 2019 03:03:07.46 [17844:18172:0129/030307.463:ERROR:backend_impl.cc(2067)] Invalid cache (current) size
+
+2월 18, 2019 04:00:37.76 NEW SESSION
+2월 18, 2019 04:00:37.76 [19412:19040:0218/040037.764:ERROR:browser_process_sub_thread.cc(209)] Waited 9 ms for network service
+
+2월 19, 2019 02:23:20.72 NEW SESSION
+2월 19, 2019 02:23:20.72 [19124:7000:0219/022320.724:ERROR:browser_process_sub_thread.cc(209)] Waited 49 ms for network service

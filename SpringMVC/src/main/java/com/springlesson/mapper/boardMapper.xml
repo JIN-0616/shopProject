@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.springlesson.mappers.BoardMappers">
+	
+	<select id="selectCount" resultType="int">
+		SELECT COUNT(*) as count FROM board
+	</select>
+	<!-- 
+	<select id="selectBoardList" resultType="com.springlesson.vo.Board">
+		<![CDATA[
+		SELECT * FROM (
+				SELECT * FROM (
+					SELECT ROWNUM as row_num, bo.num, bo.filename, bo.mem_id, bo.indate, bo.title, NVL(bo.view_cnt,0) as views FROM (
+						SELECT b.*, c.view_cnt as view_cnt FROM board b LEFT OUTER JOIN
+   						(SELECT BOARD_NUM, NVL(COUNT(MEM_NUM),0) as VIEW_CNT FROM BOARD_LIKES GROUP BY BOARD_NUM) c
+  					 ON b.num = c.board_num ORDER BY b.num DESC) bo )
+			WHERE row_num >= #{startNum})
+		WHERE row_num <= #{endNum}
+		]]>
+	</select>
+	 -->
+ 	<select id="selectBoardList" resultType="com.springlesson.vo.Board">
+		<![CDATA[
+		SELECT * FROM (
+				SELECT * FROM ( 			
+					SELECT ROWNUM row_num, bo.num, bo.filename, bo.mem_id, bo.indate, bo.title FROM  (
+						SELECT b.*, c.view_cnt as view_cnt FROM board b 
+                    		LEFT OUTER JOIN (
+		                 			SELECT BOARD_NUM, NVL(COUNT(MEM_NUM),0) as VIEW_CNT FROM  BOARD_LIKES GROUP BY BOARD_NUM
+		            		) c ON b.num = c.board_num ORDER BY b.num DESC
+		          ) bo 
+           ) WHERE row_num >= #{startNum}
+         ) WHERE row_num <= #{endNum}
+		]]>
+	</select>
+	 
+	<select id="selectBoard" resultType="com.springlesson.vo.Board" parameterType="int">
+		SELECT * FROM BOARD WHERE NUM = #{num}
+	</select>
+	<!-- mybatis3은 파라미터를 생략해도 된다. 하지만 명시해 주는 것이 유지보수에 좋다. -->
+	
+	<select id="maxNum" resultType="int">
+		SELECT NVL(MAX(num)+1,1) as num FROM BOARD
+	</select>
+	
+	<select id="checkId" resultType="string" parameterType="string">
+		SELECT id FROM member WHERE id = #{id}
+	</select>
+	
+	<select id="login" resultType="com.springlesson.vo.LoginVo">
+		SELECT * FROM MEMBER WHERE id = #{id} and pwd = #{pwd}
+	</select>
+	
+	<insert id="insertBoard">
+		INSERT INTO BOARD (num, title, content, passwd, indate, views, mem_id, filename) 
+		VALUES (NVL((SELECT max(num)+1 FROM BOARD),1), #{title}, #{content}, #{passwd}, CURRENT_DATE, 0, #{mem_id}, #{filename,jdbcType=VARCHAR})
+	</insert>
+	
+	<delete id="deleteBoard">
+		DELETE FROM BOARD WHERE num = #{num}
+	</delete>
+	
+	<update id="updateBoard">		
+		UPDATE BOARD SET passwd = #{passwd}, title = #{title},
+		content=#{content}, filename=#{filename} WHERE num = #{num}
+	</update>
+	
+	<select id="selectViews" resultType="String" parameterType="com.springlesson.vo.Likes">
+		SELECT mem_num FROM board_likes WHERE mem_num = #{mem_num} AND board_num = #{board_num}
+	</select>
+	
+	<insert id="insertViews" parameterType="com.springlesson.vo.Likes">
+		INSERT INTO BOARD_LIKES VALUES ((SELECT NVL(MAX(num),0)+1 FROM BOARD_LIKES), #{BOARD_NUM}, #{MEM_NUM}, 0)
+	</insert>
+	
+	<update id="updateLikes" parameterType="com.springlesson.vo.Likes">
+		UPDATE BOARD_LIKES SET likes = #{likes} WHERE mem_num = #{mem_num}  
+	</update>
+</mapper>

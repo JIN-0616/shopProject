@@ -1,0 +1,4 @@
+#Tomcat publish data
+#Tue Jan 29 04:02:02 KST 2019
+org.eclipse.jst.jee.server\:sts1114=C\:\\dev\\sts-bundle\\pivotal-tc-server\\instances\\base-instance\\wtpwebapps\\sts1114
+org.eclipse.jst.jee.server\:bbs=C\:\\dev\\sts-bundle\\pivotal-tc-server\\instances\\base-instance\\wtpwebapps\\bbs

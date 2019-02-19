@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.springlesson.mappers.MemberAlbumMappers">
+	<delete id="deleteMemberAll" parameterType="String">
+		DELETE FROM MEMBER_ALBUM WHERE mem_num = (SELECT num FROM member WHERE id = #{id})
+	</delete>
+	<insert id="insertMemberAlbum">
+		INSERT INTO MEMBER_ALBUM (num, mem_num, photo, thumbnail) 
+		VALUES (NVL((SELECT MAX(num)+1 FROM member_album), 1), #{mem_num}, #{photo, jdbcType=VARCHAR}, #{thumbnail, jdbcType=VARCHAR})
+	</insert>
+</mapper>

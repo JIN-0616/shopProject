@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+"http:///mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="bbs">
+	
+	<insert id="insert" parameterType="net.hb.bbs.BoardVO">
+		insert into bbs	(b_no,
+						 b_sabun,
+						 b_name,
+						 b_title,
+						 b_cnt,
+						 b_content,
+						 b_phone,
+						 b_pwd,
+						 b_wdate,
+						 b_juso1,
+						 b_juso2,
+						 b_email,
+						 b_url,
+						 b_file1,
+						 b_size1)
+		 values(bbs_seq.nextval,
+		 		#{b_sabun},
+				#{b_name},
+				#{b_title},
+				0,
+				#{b_content},
+				#{b_phone},
+				#{b_pwd},
+				sysdate,
+				#{b_juso1},
+				#{b_juso2},
+				#{b_email},
+				#{b_url},
+				#{b_file1},
+				#{b_size1}		 		
+		 ) 
+	 </insert>
+	<delete id="delete" parameterType="int">
+		delete from bbs where b_sabun=#{b_sabun}
+	</delete>
+	<select id="selectAll" resultType="net.hb.bbs.BoardVO">
+		select rownum rn, b.* from bbs b order by rn
+	</select>
+		
+	<select id="selectAllQuery"></select>
+
+	<select id="countQuery"></select>
+	
+	<select id="countAll"></select>
+		select count(*) cnt from bbs
+	<select id="detail" parameterType="int" resultType="vo">
+		select * from bbs where b_sabun = #{b_sabun}
+	</select>
+	
+	<update id="edit" parameterType="vo">
+	    update bbs set b_name = #{b_name},
+					   b_title = #{b_title},
+					   b_content = #{b_content},
+					   b_phone = #{b_phone},
+					   b_pwd = #{b_pwd},
+					   b_wdate = sysdate,
+					   b_juso1 = #{b_juso1},
+					   b_juso2 = #{b_juso2},
+					   b_email = #{b_email},
+					   b_url = #{b_url},
+					   b_file1 = #{b_file1},
+					   b_size1 = #{b_size1}
+					    where b_sabun = #{b_sabun}
+	</update>
+	<update id="cntPlus" parameterType="int">
+		update bbs set b_cnt = b_cnt+1 where b_sabun = #{b_sabun}
+	</update>
+					    
+</mapper>

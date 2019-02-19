@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+	<!-- Root Context: defines shared resources visible to all other web components -->
+    
+    <!-- 
+    DriverManagerDataSource는 커넥션(connection pool)을 지원하지 않는다. 
+    그러므로 이후엔 Apache가 제공하는 BasicDataSource를 추천한다. 
+    <bean id="dataSource"
+            class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="core.log.jdbc.driver.OracleDriver"></property>
+        <property name="url" value="jdbc:oracle:thin:@127.0.0.1:1521:XE"></property>
+        <property name="username" value="kyou"></property>
+        <property name="password" value="1234"></property>
+    </bean>
+    
+    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <constructor-arg>
+            <ref bean="dataSource"/>
+        </constructor-arg>
+        
+        첫 번째 방법 
+        <property name="dataSource" ref="dataSource"></property>
+        
+        두 번째 방법 
+        <property name="dataSource">
+            <ref bean="dataSource"/>
+        </property> 
+    </bean> -->
+    
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+        <property name="driverClassName" value="oracle.jdbc.driver.OracleDriver"/>
+        <property name="url" value="jdbc:oracle:thin:@localhost:1521:XE"/>
+        <property name="username" value="system"/>
+        <property name="password" value="oracle"/>
+        <property name="minIdle" value="50"/>
+        <property name="maxIdle" value="50"/>
+        <property name="maxActive" value="100"/> 
+    </bean>
+    
+    <bean id="JdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+  
+ 	<bean id="factoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+ 		<property name="dataSource" ref="dataSource"/>
+        <!-- property name="configLocation" value="classpath:config/context-sqlMap.xml"/ -->
+        <property name="mapperLocations" value="classpath*:com.springlesson.mapper.*Mapper.xml"/>
+    </bean>
+    
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="factoryBean" />
+	</bean>
+</beans>

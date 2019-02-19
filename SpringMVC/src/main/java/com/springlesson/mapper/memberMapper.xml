@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+
+<mapper namespace="com.springlesson.mappers.MemberMappers">
+	<select id="selectTest" resultType="com.springlesson.vo.Member">
+		SELECT * FROM member WHERE num = 1
+	</select>
+	
+	<select id="selectCount" resultType="int">
+		SELECT COUNT(*) as count FROM member
+	</select>
+	
+	<!-- (selectOne) row가 한개인 쿼리를 실행할 때는 반환되는 데이터타입이 Object이고,
+		자동으로 bean 타입으로 형변환됨 -->
+	<!-- (selectList) row가 한 개 이상인 쿼리를 실행할 때 반환되는 데이터타입은 List이고,
+		이 때 제네릭을 resultType으로 지정가능 
+		java.util.List<com.spring.vo.Member>와 같음-->
+	<select id="selectMemberList" resultType="com.springlesson.vo.Member">
+		<![CDATA[
+		SELECT * FROM (
+			SELECT * FROM (
+				SELECT ROWNUM as row_num, mem.* FROM (
+					SELECT m.*, a.thumbnail FROM member m LEFT OUTER JOIN member_album a ON m.num = a.mem_num ORDER BY m.num DESC) mem)
+				WHERE row_num >= #{startNum})
+			WHERE row_num <= #{endNum}
+		]]>
+	</select>
+	
+	<select id="selectMember" resultType="com.springlesson.vo.Member" parameterType="string">
+		SELECT m.*, a.thumbnail , a.photo FROM member m LEFT OUTER JOIN member_album a ON m.num = a.mem_num WHERE id = #{id}	
+	</select>
+	<!-- mybatis3은 파라미터를 생략해도 된다. 하지만 명시해 주는 것이 유지보수에 좋다. -->
+	
+	<select id="getMaxNum" resultType="int">
+		SELECT NVL(MAX(num)+1,1) as num FROM member
+	</select>
+	
+	<select id="selectId" resultType="string" parameterType="string">
+		SELECT id FROM member WHERE id = #{id}
+	</select>
+	
+	<select id="login" resultType="com.springlesson.vo.LoginVo">
+		SELECT m.*, a.thumbnail, a.photo FROM MEMBER m LEFT OUTER JOIN MEMBER_ALBUM a ON m.num = a.mem_num WHERE id = #{id} and pwd = #{pwd}
+	</select>
+	<!-- userGeneratedKey는 insert 성공시 유니크 키로 등록된 값을 파라미터 변수에 등록한다. -->
+	<!-- keyColumn은 등록된 유니크 키, keyProperty파라미터의 변수명 -->
+	<!-- insert 성공시 member.setNum(num)이 실행됨 -->	
+	<insert id="insertMember" parameterType="com.springlesson.vo.Member"
+		keyColumn="num" useGeneratedKeys="true" keyProperty="num">
+		INSERT INTO member (num, id, pwd, name, email, phone, indate, admin) 
+		values(NVL((SELECT MAX(num)+1 FROM member),1) , #{id}, #{pwd}, #{name}, #{email}, #{phone}, CURRENT_DATE, #{admin})
+	</insert>
+	<delete id="deleteMember">
+		DELETE FROM member WHERE id = #{id}
+	</delete>
+	<update id="updateMember">
+		UPDATE member SET pwd=#{pwd}, name=#{name}, email=#{email}, 
+		phone=#{phone}, admin=#{admin} WHERE id=#{id}
+	</update>	
+</mapper>

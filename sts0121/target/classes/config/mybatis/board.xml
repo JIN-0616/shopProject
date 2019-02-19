@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper 
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="board">	
+	
+	<insert id="add" parameterType="net.hb.crud.BoardDTO">
+		<selectKey keyProperty="mid" resultType="int" order="BEFORE">
+			select NVL(max(hobby_idx),0)+1 from hobby
+		</selectKey>
+		
+		insert into hobby(hobby_idx,name,title,content,gender,hobby,img_file_name)
+	     values(#{mid}, #{name}, #{title},#{content},#{gender}, #{hobby}, #{img_file_name} )		
+	</insert>
+	
+	<insert id="myadd" parameterType="net.hb.crud.BoardDTO">		
+		INSERT INTO hobby (hobby_idx, name, title, content, gender, hobby, img_file_name) 
+		VALUES( 
+			 hobby_seq.nextval, 
+             #{name}, 
+             #{title}, 
+             #{content}, 
+             #{gender}, 
+             #{hobby}, 
+             #{img_file_name}) 	
+	</insert>
+	
+	<delete id="del" parameterType="int">
+	    delete from  hobby where hobby_idx = #{hobby_idx} 
+	</delete>
+	
+	<select id="selectAllDynamic" parameterType="hashmap"  resultType="net.hb.crud.BoardDTO">
+		select * from (
+		select  rownum as rn, h.*, (
+			select count(*) rcnt from hobby_reply r where r.hobby_idx=h.hobby_idx
+		) as rcnt from  (
+		select * from hobby 
+		
+		<if test="skey != null">
+			<if test="skey == 'name'">
+				where name like '%' || #{sval} || '%'
+			</if>
+			<if test="skey == 'title'">
+				where title like '%' || #{sval} || '%'
+			</if>
+			<if test="skey == 'content'">
+				where content like '%' || #{sval} || '%'
+			</if>
+		</if>
+		
+		   order by hobby_idx desc
+		  ) h
+	   ) where rn between #{start} and #{end}		
+	</select>
+	
+	<select id="selectAll" resultType="net.hb.crud.BoardDTO">
+		select rownum rn, h.*, (
+			select count(*) rcnt from hobby_reply r where r.hobby_idx=h.hobby_idx
+		) as rcnt from hobby h order by rn
+	</select>
+	
+	<select id="selectAlla" resultType="net.hb.crud.BoardDTO">
+		select rownum rn, h.* from hobby h order by rn
+	</select>
+	
+	<select id="countQuery" parameterType="hashmap" resultType="int">
+		select count(*) from hobby 
+				<if test="skey != null">
+					<if test="skey == 'name'">
+						where name like '%'||#{sval}||'%'
+					</if>
+					<if test="skey == 'title'">
+						where title like '%'||#{sval}||'%'
+					</if>
+					<if test="skey == 'content'">
+						where content like '%'||#{sval}||'%'
+					</if>
+				</if>
+	</select>
+	
+	<select id="countAll" resultType="int">
+	     select count(*)  from hobby 
+	</select>	
+	
+	<select id="detail"  parameterType="int" resultType="net.hb.crud.BoardDTO">
+		select * from hobby where hobby_idx = #{hobby_idx}
+	</select>
+	
+	<update id="edit" parameterType="net.hb.crud.BoardDTO">
+	    update hobby set name=#{name},title=#{title},content=#{content}, 
+	    gender=#{gender}, hobby=#{hobby},img_file_name=#{img_file_name} 
+	    where hobby_idx=#{hobby_idx}
+	</update>
+</mapper>

@@ -1,0 +1,9 @@
+package com.spring.shop.util;
+
+public class MediaUtils {
+	private static Map<String, MediaType> mediaType;
+	
+	static {
+		mediaMap = new HashMap<>();
+	}
+}
